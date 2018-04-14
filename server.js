@@ -33,7 +33,7 @@ app.post('/posts', function(req, res, next) {
 app.put('/approve_posts', function(req, res, next) {
     console.log(req.body._id)
   //db.collection("posts").update(req.body, {}, function(e, results){
-  db.collection("posts").update({ '_id': ObjectID(req.body._id) }, {$set: {isApproved:"Y"}}, function(e, results){
+  db.collection("posts").update({ '_id': ObjectID(req.body._id) }, {$set: {isApproved:"Y",title:req.body.title,website:req.body.website,image:req.body.image,status:req.body.status}}, function(e, results){
     if (e) return next(e)
       //console.log(results)
     res.send(results)
@@ -54,4 +54,15 @@ app.get("/hand-picked-posts", function(req, res, next) {
      if (e) return next(e)
      res.send(results)
    })
+});
+// authenticate
+app.post("/authenticate", function(req, res, next) {
+   db.collection('users').findOne({username: req.body.username, password: req.body.password}, function(err, result) {
+         if(err) {
+             return console.log('findOne error:', err);
+         }
+         else { result.token= 'fake-jwt-token';
+           res.json(result);
+         }
+     });
 });
