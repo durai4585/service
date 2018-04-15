@@ -3,8 +3,10 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 const bodyParser = require('body-parser');
 const app = express();
+var fs = require('fs');
 
-app.use(bodyParser());
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 // Connect
 var db
 
@@ -18,7 +20,7 @@ MongoClient.connect('mongodb://navin:admin123@ds131989.mlab.com:31989/portal', (
 
 // Reuse database object in request handlers
 app.get("/posts", function(req, res, next) {
-  db.collection("posts").find({ isActive:"Y" } ,{limit:10, sort: [['_id',-1]]}).toArray(function(e, results){
+  db.collection("posts").find({  } ,{limit:10, sort: [['_id',-1]]}).toArray(function(e, results){
      if (e) return next(e)
      res.send(results)
    })
@@ -31,7 +33,7 @@ app.post('/posts', function(req, res, next) {
   })
 });
 app.put('/approve_posts', function(req, res, next) {
-    console.log(req.body._id)
+    console.log(req.body)
   //db.collection("posts").update(req.body, {}, function(e, results){
   db.collection("posts").update({ '_id': ObjectID(req.body._id) }, {$set: {isApproved:"Y",title:req.body.title,website:req.body.website,image:req.body.image,status:req.body.status}}, function(e, results){
     if (e) return next(e)
@@ -40,9 +42,9 @@ app.put('/approve_posts', function(req, res, next) {
   })
 });
 app.put('/delete_posts', function(req, res, next) {
-    console.log(req.body._id)
+    //console.log(req.body)
   //db.collection("posts").update(req.body, {}, function(e, results){
-  db.collection("posts").update({ '_id': ObjectID(req.body._id) }, {$set: {isActive:"N"}}, function(e, results){
+  db.collection("posts").update({ '_id': ObjectID(req.body._id) }, {$set: {isActive:"N",status:req.body.status}}, function(e, results){
     if (e) return next(e)
       //console.log(results)
     res.send(results)
