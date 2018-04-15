@@ -19,7 +19,7 @@ MongoClient.connect('mongodb://navin:admin123@ds131989.mlab.com:31989/portal', (
 })
 
 // Reuse database object in request handlers
-app.get("/posts", function(req, res, next) {
+app.get("/add_posts", function(req, res, next) {
   db.collection("posts").find({  } ,{limit:10, sort: [['_id',-1]]}).toArray(function(e, results){
      if (e) return next(e)
      res.send(results)
